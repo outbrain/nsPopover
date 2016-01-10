@@ -203,7 +203,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['build', 'compile']);
 
-  grunt.registerTask('build', ['clean', 'sass:build', 'jshint', 'copy:js', 'copy:example']);
+  grunt.registerTask('build', ['clean', 'sass:build', 'copy:js', 'copy:example']);
 
   grunt.registerTask('js', ['clean', 'jshint', 'copy:js', 'copy:example']);
 

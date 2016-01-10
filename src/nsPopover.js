@@ -28,6 +28,7 @@
       timeout: 1.5,
       trigger: 'click',
       triggerPrevent: true,
+      fixedPosition: false
     };
 
     this.setDefaults = function(newDefaults) {
@@ -54,15 +55,15 @@
     '$document',
     '$parse',
     function(
-            nsPopover,
-            $rootScope,
-            $timeout,
-            $templateCache,
-            $q,
-            $http,
-            $compile,
-            $document,
-            $parse
+        nsPopover,
+        $rootScope,
+        $timeout,
+        $templateCache,
+        $q,
+        $http,
+        $compile,
+        $document,
+        $parse
     ) {
       return {
         restrict: 'A',
@@ -97,6 +98,7 @@
             timeout: attrs.nsPopoverTimeout || defaults.timeout,
             trigger: attrs.nsPopoverTrigger || defaults.trigger,
             triggerPrevent: attrs.nsPopoverTriggerPrevent || defaults.triggerPrevent,
+            fixedPosition: toBoolean(attrs.nsPopoverFixed || defaults.fixedPosition)
           };
           var placement_;
           var unregisterActivePopoverListeners;
@@ -117,24 +119,24 @@
             }
 
             elm
-                    .on('mouseout', hide)
-                    .on('mouseover', cancel)
+                .on('mouseout', hide)
+                .on('mouseover', cancel)
             ;
 
             $popover
-                    .on('mouseout', hide)
-                    .on('mouseover', cancel)
+                .on('mouseout', hide)
+                .on('mouseover', cancel)
             ;
 
             unregisterActivePopoverListeners = function() {
               elm
-                      .off('mouseout', hide)
-                      .off('mouseover', cancel)
+                  .off('mouseout', hide)
+                  .off('mouseover', cancel)
               ;
 
               $popover
-                      .off('mouseout', hide)
-                      .off('mouseover', cancel)
+                  .off('mouseout', hide)
+                  .off('mouseover', cancel)
               ;
             }
           }
@@ -180,8 +182,8 @@
 
           function display(e) {
             if (
-                    angular.isObject(e) &&
-                    false !== options.triggerPrevent
+                angular.isObject(e) &&
+                false !== options.triggerPrevent
             ) {
               e.preventDefault();
             }
@@ -199,7 +201,7 @@
 
             // ClientRect class is immutable, so we need to return a modified copy
             // of it when the window has been scrolled.
-            if (x || y) {
+            if (!options.fixedPosition && (x || y)) {
               return {
                 bottom:rect.bottom+y,
                 left:rect.left + x,
@@ -300,8 +302,8 @@
             }
 
             popover
-                    .css('top', top.toString() + 'px')
-                    .css('left', left.toString() + 'px');
+                .css('top', top.toString() + 'px')
+                .css('left', left.toString() + 'px');
 
             if (triangle && triangle.length) {
               if (placement === 'top' || placement === 'bottom') {
@@ -492,13 +494,13 @@
 
           // Parse the desired placement and alignment values.
           match = options
-                  .placement
-                  .match(/^(top|bottom|left|right)$|((top|bottom)\|(center|left|right)+)|((left|right)\|(center|top|bottom)+)/)
+              .placement
+              .match(/^(top|bottom|left|right)$|((top|bottom)\|(center|left|right)+)|((left|right)\|(center|top|bottom)+)/)
           ;
           if (!match) {
             throw new Error(
-                    '"' + options.placement + '" is not a valid placement or has ' +
-                    'an invalid combination of placements.'
+                '"' + options.placement + '" is not a valid placement or has ' +
+                'an invalid combination of placements.'
             );
           }
           placement_ = match[6] || match[3] || match[1];
@@ -508,10 +510,10 @@
           // popovers.
           globalId += 1;
           $popover = $el('<div id="nspopover-' + globalId +'"></div>')
-                  .addClass('ns-popover-' + placement_ + '-placement')
-                  .addClass('ns-popover-' + align_ + '-align')
-                  .css('position', 'absolute')
-                  .css('display', 'none')
+              .addClass('ns-popover-' + placement_ + '-placement')
+              .addClass('ns-popover-' + align_ + '-align')
+              .css('position', 'absolute')
+              .css('display', 'none')
           ;
           $popovers.push($popover);
 
@@ -537,16 +539,16 @@
           // $rootScope if `angular-event` was given.
           if (angular.isString(options.angularEvent)) {
             unregisterDisplayMethod = $rootScope.$on(
-                    options.angularEvent,
-                    display
+                options.angularEvent,
+                display
             );
 
             // Display the popover when a message is broadcasted on the
             // scope if `scope-event` was given.
           } else if (angular.isString(options.scopeEvent)) {
             unregisterDisplayMethod = scope.$on(
-                    options.scopeEvent,
-                    display
+                options.scopeEvent,
+                display
             )
 
             // Otherwise just display the popover whenever the event that was
@@ -560,33 +562,33 @@
 
           // Load the template and compile the popover.
           $q
-                  .when(loadTemplate(options.template, options.plain))
-                  .then(function(template) {
-                    if (angular.isObject(template)) {
-                      template = angular.isString(template.data) ?
-                              template.data : ''
-                      ;
-                    }
+              .when(loadTemplate(options.template, options.plain))
+              .then(function(template) {
+                if (angular.isObject(template)) {
+                  template = angular.isString(template.data) ?
+                      template.data : ''
+                  ;
+                }
 
-                    // Set the popover element HTML.
-                    $popover.html(template);
+                // Set the popover element HTML.
+                $popover.html(template);
 
-                    // Add the "theme" class to the element.
-                    if (options.theme) {
-                      $popover.addClass(options.theme);
-                    }
+                // Add the "theme" class to the element.
+                if (options.theme) {
+                  $popover.addClass(options.theme);
+                }
 
-                    // Compile the element.
-                    $compile($popover)(scope);
+                // Compile the element.
+                $compile($popover)(scope);
 
-                    // Cache the triangle element (works in ie8+).
-                    $triangle = $el(
-                            $popover[0].querySelectorAll('.triangle')
-                    );
+                // Cache the triangle element (works in ie8+).
+                $triangle = $el(
+                    $popover[0].querySelectorAll('.triangle')
+                );
 
-                    // Append it to the DOM
-                    $container.append($popover);
-                  })
+                // Append it to the DOM
+                $container.append($popover);
+              })
           ;
         }
       };
