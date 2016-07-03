@@ -1,6 +1,6 @@
 .idea/
 .git/
-build/
 node_modules/
 .sass-cache/
 
+build/

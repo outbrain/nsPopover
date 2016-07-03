@@ -399,8 +399,8 @@
 
                 // position the popover accordingly to the defined placement around the
                 // |elm|.
-                if(options.displayOnElement && $document.querySelectorAll(options.displayOnElement).length > 0) {
-                  var elmRect = getBoundingClientRect($document.querySelectorAll(options.displayOnElement)[0]);
+                if(options.displayOnElement && $document[0].querySelectorAll(options.displayOnElement).length > 0) {
+                  var elmRect = getBoundingClientRect($document[0].querySelectorAll(options.displayOnElement)[0]);
                 }
                 else{
                   var elmRect = getBoundingClientRect(elm[0]);
@@ -487,7 +487,7 @@
 
           // Set the container to the passed selector. If the container element
           // was not found, use the body as the container.
-          $container = $document.querySelectorAll(options.container);
+          $container = angular.element($document[0].querySelectorAll(options.container));
           if (!$container.length) {
             $container = $document.find('body');
           }
